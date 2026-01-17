@@ -9,7 +9,6 @@ trait TracksModelActivity
 {
     public static function bootTracksModelActivity(): void
     {
-        // Never track the Activity model itself
         if (static::class === Activity::class) {
             return;
         }

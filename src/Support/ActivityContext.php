@@ -23,17 +23,12 @@ class ActivityContext
         return static::$requestId;
     }
 
-    public static function setOrigin(string $origin): void
-    {
-        static::$origin = $origin;
-    }
 
     public static function addMeta(array $meta): array
     {
         static::$meta = array_merge(static::$meta, $meta);
         return static::$meta;
     }
-
 
     public static function meta(): array
     {
@@ -56,7 +51,6 @@ class ActivityContext
         static::$causerId   = $id;
     }
 
-
     public static function causerType(): ?string
     {
         return static::$causerType;
@@ -71,7 +65,6 @@ class ActivityContext
     {
         static::$requestId = null;
         static::$batchId   = null;
-        static::$origin    = null;
         static::$causerType = null;
         static::$causerId   = null;
         static::$meta      = [];
