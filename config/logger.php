@@ -1,13 +1,11 @@
 <?php
-
 return [
-    'enabled' => env('LOGGER_ENABLED', true),
+
+    'enabled' => true,
 
     'table' => 'activity_logs',
 
-    'default_log' => env('LOGGER_DEFAULT_LOG', 'default'),
-
-    'origin' => env('LOGGER_ORIGIN', 'web'),
+    'default_log' => 'default',
 
     'events' => [
         'created',
@@ -23,7 +21,4 @@ return [
         'remember_token',
     ],
 
-    'use_diffs' => true,
-
-    'driver' => 'database',
 ];
