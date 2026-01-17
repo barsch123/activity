@@ -11,12 +11,11 @@
     "authors": [
         {
             "name": "Gottvergessen",
-            "email": "w@gmaiil.com",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.2",
         "illuminate/contracts": "^11.0||^12.0",
         "spatie/laravel-package-tools": "^1.16"
     },
