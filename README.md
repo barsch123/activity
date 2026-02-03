@@ -43,13 +43,48 @@ php artisan activity:prune --days=30
 ### config/activity.php
 
 ```php
+<?php
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Logging Enabled
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether activity logging is enabled globally.
+    | You can disable this to turn off all activity logging.
+    |
+    */
     'enabled' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Logs Table Name
+    |--------------------------------------------------------------------------
+    |
+    | The database table name where activity logs will be stored.
+    |
+    */
     'table' => 'activity_logs',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Log Category
+    |--------------------------------------------------------------------------
+    |
+    | The default log category to use when a model doesn't specify one.
+    |
+    */
     'default_log' => 'default',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Tracked Events
+    |--------------------------------------------------------------------------
+    |
+    | The default events that will be tracked for all models.
+    | Models can override this using the $trackEvents property.
+    |
+    */
     'events' => [
         'created',
         'updated',
@@ -57,12 +92,65 @@ return [
         'restored',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Ignored Attributes
+    |--------------------------------------------------------------------------
+    |
+    | Attributes that should be ignored when logging changes globally.
+    | Models can add more via the $ignoredAttributes property.
+    |
+    */
     'ignore_attributes' => [
         'created_at',
         'updated_at',
         'deleted_at',
         'remember_token',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Capture Causer
+    |--------------------------------------------------------------------------
+    |
+    | Automatically capture the authenticated user who made the change.
+    |
+    */
+    'capture_causer' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Capture Request Metadata
+    |--------------------------------------------------------------------------
+    |
+    | Capture HTTP request metadata (method, host).
+    | Only applies to web requests, not console commands.
+    |
+    */
+    'capture_request_meta' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Capture IP Address
+    |--------------------------------------------------------------------------
+    |
+    | Capture the IP address of the user making the change.
+    | Only applies to web requests. Requires explicit opt-in due to privacy.
+    |
+    */
+    'capture_ip' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auto Batch
+    |--------------------------------------------------------------------------
+    |
+    | Automatically assign a unique batch ID to each request's activities.
+    | When enabled, all activities within a single request share a batch_id.
+    |
+    */
+    'auto_batch' => false,
+
 ];
 ```
 
@@ -89,32 +177,6 @@ $user->update(['name' => 'Jane']);
 $user->delete();
 // ✓ Creates activity log with event='deleted'
 ```
-
-## View Activity History
-
-Add the `InteractsWithActivity` trait to access activities:
-
-```php
-use Gottvergessen\Activity\Traits\InteractsWithActivity;
-
-class User extends Authenticatable
-{
-    use TracksModelActivity, InteractsWithActivity;
-}
-
-// Get all activities for a user
-$user->activities()->get();
-
-// Get the most recent activity
-$latest = $user->latestActivity();
-
-// Check if user has any activities
-if ($user->hasActivities()) {
-    echo "This user has activity history";
-}
-```
-
-## Common Examples
 
 ### Ignore Specific Fields per Model
 
@@ -160,6 +222,8 @@ The `activity_logs` table tracks the following information:
 
 ## Eloquent Friendly
 
+Add the `InteractsWithActivity` trait to easily query a model's activities:
+
 ```php
 use Gottvergessen\Activity\Traits\TracksModelActivity;
 use Gottvergessen\Activity\Traits\InteractsWithActivity;
@@ -170,14 +234,25 @@ class User extends Authenticatable
 }
 ```
 
-With the `InteractsWithActivity` trait, you can easily query a model's activities:
+Now you can access activities directly from your models:
 
 ```php
+// Eager load activities
 $users = User::with('activities')->get();
 
-// Access activities for a specific model
-$userActivities = $user->activities()->get();
-$userActivities = $user->activities()->where('event', 'updated')->get();
+// Get all activities for a user
+$user->activities()->get();
+
+// Filter activities
+$user->activities()->where('event', 'updated')->get();
+
+// Get the most recent activity
+$latest = $user->latestActivity();
+
+// Check if user has any activities
+if ($user->hasActivities()) {
+    echo "This user has activity history";
+}
 ```
 
 The `InteractsWithActivity` trait is optional and only required if you want to access `$model->activities()`.
@@ -317,9 +392,8 @@ Activity::inLog('invoices')->get();
 Activity::betweenDates($startDate, $endDate)->get();
 ```
 
-## Real-World Examples
 
-### Example 1: Audit Trail
+###  Audit Trail
 
 ```php
 $deletions = Activity::forEvent('deleted')
@@ -329,7 +403,7 @@ $deletions = Activity::forEvent('deleted')
     ->get();
 ```
 
-### Example 2: Document History
+###  Document History
 
 ```php
 class Document extends Model
