@@ -1,5 +1,9 @@
 # Logger
 
+[![Tests](https://github.com/barsch123/logger/actions/workflows/run-tests.yml/badge.svg)](https://github.com/barsch123/logger/actions/workflows/run-tests.yml)
+[![Packagist Version](https://img.shields.io/packagist/v/gottvergessen/activity.svg?style=flat-square)](https://packagist.org/packages/gottvergessen/activity)
+[![License](https://img.shields.io/packagist/l/gottvergessen/activity.svg?style=flat-square)](LICENSE.md)
+
 Logger is a lightweight, opinionated activity logging package for Laravel that automatically tracks model changes and records who did what, to which model, and when — without polluting your domain logic.
 
 **Features:**
