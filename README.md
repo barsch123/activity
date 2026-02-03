@@ -39,14 +39,6 @@ php artisan activity:prune
 php artisan activity:prune --days=30
 ```
 
-You can schedule this in your `app/Console/Kernel.php`:
-
-```php
-protected function schedule(Schedule $schedule)
-{
-    $schedule->command('activity:prune --days=90')->daily();
-}
-```
 
 ### config/activity.php
 
