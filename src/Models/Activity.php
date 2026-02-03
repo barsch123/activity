@@ -63,8 +63,11 @@ class Activity extends Model
     /**
      * Scope to filter activities by batch ID.
      */
-    public function scopeInBatch($query, string $batchId)
+    public function scopeInBatch($query, ?string $batchId)
     {
+        if (is_null($batchId)) {
+            return $query->whereNull('batch_id');
+        }
         return $query->where('batch_id', $batchId);
     }
 

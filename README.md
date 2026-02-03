@@ -2,6 +2,16 @@
 
 Logger is a lightweight, opinionated activity logging package for Laravel that automatically tracks model changes and records who did what, to which model, and when — without polluting your domain logic.
 
+**Features:**
+- ✨ Automatic tracking of model changes (create, update, delete, restore)
+- 🔒 Privacy-first with explicit opt-in for sensitive data
+- 🎯 Flexible configuration per model or globally
+- 📊 Query scopes for easy filtering and analysis
+- 🔄 Batch operations to group related changes
+- ⚡ Lightweight and performant
+- 🧹 Built-in pruning command for cleanup
+- 📝 Comprehensive audit trails
+
 
 ## Installation
 
@@ -72,11 +82,49 @@ use Gottvergessen\Activity\Traits\TracksModelActivity;
 class User extends Authenticatable
 {
     use TracksModelActivity;
-
 }
 ```
 
-## Ignore Specific Fields per Model
+Now all changes to the User model are automatically logged:
+
+```php
+$user = User::create(['name' => 'John', 'email' => 'john@example.com']);
+// ✓ Creates activity log with event='created'
+
+$user->update(['name' => 'Jane']);
+// ✓ Creates activity log with event='updated' showing the change
+
+$user->delete();
+// ✓ Creates activity log with event='deleted'
+```
+
+## View Activity History
+
+Add the `InteractsWithActivity` trait to access activities:
+
+```php
+use Gottvergessen\Activity\Traits\InteractsWithActivity;
+
+class User extends Authenticatable
+{
+    use TracksModelActivity, InteractsWithActivity;
+}
+
+// Get all activities for a user
+$user->activities()->get();
+
+// Get the most recent activity
+$latest = $user->latestActivity();
+
+// Check if user has any activities
+if ($user->hasActivities()) {
+    echo "This user has activity history";
+}
+```
+
+## Common Examples
+
+### Ignore Specific Fields per Model
 
 ```php
 use Gottvergessen\Activity\Traits\TracksModelActivity;
@@ -276,6 +324,33 @@ Activity::inLog('invoices')->get();
 // Filter by date range
 Activity::betweenDates($startDate, $endDate)->get();
 ```
+
+## Real-World Examples
+
+### Example 1: Audit Trail
+
+```php
+$deletions = Activity::forEvent('deleted')
+    ->forSubject($user)
+    ->with('causer')
+    ->latest()
+    ->get();
+```
+
+### Example 2: Document History
+
+```php
+class Document extends Model
+{
+    use TracksModelActivity, InteractsWithActivity;
+}
+
+@foreach($document->activities()->latest()->get() as $activity)
+    {{ $activity->causer?->name }}: {{ $activity->description }}
+@endforeach
+```
+
+For more examples and patterns, see [EXAMPLES.md](EXAMPLES.md).
 
 ## License
 
