@@ -1,0 +1,47 @@
+name: fix-php-code-style
+
+on:
+  pull_request:
+    paths:
+      - '**.php'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fix-code-style:
+    name: Fix PHP Code Style
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    # Only run on PRs from the same repository (not forks), since we need write access
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, intl, fileinfo
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction
+
+      - name: Run Pint (auto-fix)
+        run: vendor/bin/pint
+
+      - name: Commit style fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: apply automatic PHP code style fixes"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          skip_dirty_check: false

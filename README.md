@@ -1,6 +1,7 @@
 # Logger
 
 [![Tests](https://github.com/barsch123/activity/actions/workflows/run-tests.yml/badge.svg)](https://github.com/barsch123/activity/actions/workflows/run-tests.yml)
+[![Code Quality](https://github.com/barsch123/activity/actions/workflows/code-quality.yml/badge.svg)](https://github.com/barsch123/activity/actions/workflows/code-quality.yml)
 [![Packagist Version](https://img.shields.io/packagist/v/gottvergessen/activity.svg?style=flat-square)](https://packagist.org/packages/gottvergessen/activity)
 [![License](https://img.shields.io/packagist/l/gottvergessen/activity.svg?style=flat-square)](LICENSE.md)
 
